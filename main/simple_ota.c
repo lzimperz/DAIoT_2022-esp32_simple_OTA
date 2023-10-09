@@ -27,7 +27,7 @@
 
 /* The interface name value can refer to if_desc in esp_netif_defaults.h */
 /* Select network interface (uncomment correct interface declaration) */
-static const char *bind_interface_name = "sta";     // Wi-Fi interface
+static const char *bind_interface_name = "example_netif_sta";     // Wi-Fi interface
 // static const char *bind_interface_name = "eth";  // Ethernet interface
 
 /* Wi-Fi SSID and Wi-Fi PASSWORD can be set up on the project configuration.
@@ -66,6 +66,9 @@ esp_err_t _http_event_handler(esp_http_client_event_t *evt)
     case HTTP_EVENT_DISCONNECTED:
         ESP_LOGD(TAG, "HTTP_EVENT_DISCONNECTED");
         break;
+    case HTTP_EVENT_REDIRECT:
+        ESP_LOGD(TAG, "HTTP_EVENT_REDIRECTED");
+        break;
     }
     return ESP_OK;
 }
@@ -91,19 +94,22 @@ void simple_ota_example_task(void *pvParameter)
         .if_name = &ifr,
     };
 
+    esp_https_ota_config_t ota_config = {
+        .http_config = &config,
+    };
 
     // Skip CERT COMMON NAME CHECK - Only for testing
     config.skip_cert_common_name_check = true;
 
-    esp_err_t ret = esp_https_ota(&config);
+    esp_err_t ret = esp_https_ota(&ota_config);
     if (ret == ESP_OK) {
 
-        ESP_LOGI(TAG, "OTA Tool Example v1.0");
+        ESP_LOGI(TAG, "FIRMWARE MODIFICADO EN CLASE");
 
         const esp_partition_t *running = esp_ota_get_running_partition();
 
         // Display the running partition
-        ESP_LOGI(TAG, "Running partition: %s", running->label);
+        ESP_LOGW(TAG, "Running partition: %s", running->label);
 
         ESP_LOGI(TAG, "Example end");
 
